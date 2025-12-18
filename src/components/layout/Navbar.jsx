@@ -1,158 +1,105 @@
-import { useState, useEffect } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
-import { FiSun, FiMoon, FiMenu, FiX } from "react-icons/fi";
-import { toast } from "react-toastify";
+import { useState } from "react";
 
 const Navbar = () => {
-  const { user, userData, logoutUser } = useAuth();
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-  const [isOpen, setIsOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [theme, setTheme] = useState("light");
 
-  useEffect(() => {
-    const html = document.querySelector("html");
-    html.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  // Toggle between light and dark mode
-  const handleTheme = (checked) => {
-    setTheme(checked ? "dark" : "light");
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
   };
 
-  // Logout handler with toast notification
-  const handleLogout = async () => {
-    try {
-      await logoutUser();
-      toast.success("Logged out successfully!");
-      setDropdownOpen(false);
-    } catch (error) {
-      toast.error("Logout failed");
-    }
+  const handleLogout = () => {
+    logout();
+    navigate("/");
   };
-
-  const navLinks = (
-    <>
-      <NavLink
-        to="/"
-        className={({ isActive }) => (isActive ? "text-primary font-bold" : "")}
-      >
-        Home
-      </NavLink>
-      <NavLink
-        to="/meals"
-        className={({ isActive }) => (isActive ? "text-primary font-bold" : "")}
-      >
-        Meals
-      </NavLink>
-      {user && (
-        <NavLink
-          to="/dashboard"
-          className={({ isActive }) =>
-            isActive ? "text-primary font-bold" : ""
-          }
-        >
-          Dashboard
-        </NavLink>
-      )}
-    </>
-  );
 
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link
-          to="/"
-          className="text-2xl font-bold text-primary flex items-center gap-2"
-        >
+    <div className="navbar bg-base-100 shadow-lg fixed top-0 z-50">
+      <div className="navbar-start">
+        <Link to="/" className="btn btn-ghost normal-case text-xl">
           🍳 LocalChefBazaar
         </Link>
-
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-6">{navLinks}</div>
-
-        {/* Right Side: Theme Toggle + User Menu/Auth Buttons */}
-        <div className="flex items-center gap-4">
-          {/* Theme Toggle */}
-          <label className="swap swap-rotate">
-            <input
-              type="checkbox"
-              onChange={(e) => handleTheme(e.target.checked)}
-              checked={theme === "dark"}
-            />
-            <FiSun className="swap-off fill-current w-6 h-6" />
-            <FiMoon className="swap-on fill-current w-6 h-6" />
-          </label>
-
-          {/* User Menu (if logged in) */}
-          {user ? (
-            <div className="relative">
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="btn btn-circle btn-ghost"
-              >
-                <img
-                  src={userData?.image || user.photoURL}
-                  alt={user.displayName}
-                  className="w-10 h-10 rounded-full object-cover border-2 border-primary"
-                />
-              </button>
-
-              {/* Dropdown Menu */}
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-base-100 rounded-lg shadow-xl border border-base-300 py-2 z-50">
-                  <div className="px-4 py-2 border-b border-base-300">
-                    <p className="font-semibold truncate">{user.displayName}</p>
-                    <p className="text-sm text-base-content/60 truncate">
-                      {user.email}
-                    </p>
-                  </div>
-                  <Link
-                    to="/dashboard/profile"
-                    className="block px-4 py-2 hover:bg-base-200"
-                    onClick={() => setDropdownOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 hover:bg-base-200 text-error"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            // Auth Buttons (if not logged in)
-            <div className="hidden md:flex gap-2">
-              <Link to="/login" className="btn btn-ghost">
-                Login
-              </Link>
-              <Link to="/register" className="btn btn-primary">
-                Sign Up
-              </Link>
-            </div>
-          )}
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden btn btn-ghost btn-square"
-          >
-            {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-          </button>
-        </div>
       </div>
+      <div className="navbar-center hidden lg:flex">
+        <ul className="menu menu-horizontal px-1">
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/meals">Meals</Link>
+          </li>
+          {user && (
+            <li>
+              <Link to="/dashboard">Dashboard</Link>
+            </li>
+          )}
+        </ul>
+      </div>
+      <div className="navbar-end gap-3">
+        <label className="swap swap-rotate">
+          <input
+            type="checkbox"
+            onChange={toggleTheme}
+            checked={theme === "dark"}
+          />
+          <svg
+            className="swap-on fill-current w-8 h-8"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            <path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
+          </svg>
+          <svg
+            className="swap-off fill-current w-8 h-8"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            <path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z" />
+          </svg>
+        </label>
 
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden bg-white dark:bg-gray-800 px-4 py-4 space-y-3">
-          {navLinks}
-        </div>
-      )}
-    </nav>
+        {user ? (
+          <div className="dropdown dropdown-end">
+            <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+              <div className="w-10 rounded-full">
+                <img
+                  src={
+                    user?.photoURL || "https://i.ibb.co.com/0s3pdnc/avatar.png"
+                  }
+                  alt="Profile"
+                  className="w-10 rounded-full ring-2 ring-primary"
+                />
+              </div>
+            </label>
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+            >
+              <li>
+                <Link to="/dashboard/profile">Profile</Link>
+              </li>
+              <li>
+                <button onClick={handleLogout}>Logout</button>
+              </li>
+            </ul>
+          </div>
+        ) : (
+          <>
+            <Link to="/login" className="btn btn-primary">
+              Login
+            </Link>
+            <Link to="/register" className="btn btn-outline">
+              Register
+            </Link>
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 
