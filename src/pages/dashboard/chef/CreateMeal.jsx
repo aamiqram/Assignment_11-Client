@@ -3,54 +3,102 @@ import useAuth from "../../../hooks/useAuth";
 import axiosSecure from "../../../utils/axiosSecure";
 import Swal from "sweetalert2";
 import { useQuery } from "@tanstack/react-query";
+import LoadingSpinner from "../../../components/layout/LoadingSpinner";
 
 const CreateMeal = () => {
   const { user } = useAuth();
   const { register, handleSubmit, reset } = useForm();
 
-  const { data: userData } = useQuery({
+  const {
+    data: userData,
+    isLoading: userLoading,
+    error,
+  } = useQuery({
     queryKey: ["user", user?.email],
     queryFn: async () => {
       const res = await axiosSecure.get(`/user/${user.email}`);
       return res.data;
     },
+    enabled: !!user?.email,
   });
 
-  if (userData?.status === "fraud") {
+  if (userLoading) return <LoadingSpinner />;
+  if (error || !userData?.chefId) {
     return (
-      <div className="alert alert-error">Fraud users cannot create meals.</div>
+      <div className="alert alert-error">
+        <span>You must be an approved chef to create meals.</span>
+      </div>
     );
   }
 
   const onSubmit = async (data) => {
-    const formData = new FormData();
-    formData.append("image", data.foodImage[0]);
+    // Default fallback
+    let foodImage = "https://i.ibb.co.com/placeholder-meal.jpg"; // nice food placeholder
 
-    const imgRes = await fetch(
-      `https://api.imgbb.com/1/upload?key=YOUR_IMGBB_KEY`,
-      {
-        method: "POST",
-        body: formData,
+    try {
+      // Check if image file is selected
+      if (data.foodImage && data.foodImage[0]) {
+        const formData = new FormData();
+        formData.append("image", data.foodImage[0]);
+
+        const res = await fetch(
+          `https://api.imgbb.com/1/upload?key=${
+            import.meta.env.VITE_IMGBB_KEY
+          }`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        // Critical: Check if upload succeeded
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error("ImgBB upload failed:", errorText);
+          Swal.fire(
+            "Upload Failed",
+            "Image upload failed. Using placeholder.",
+            "warning"
+          );
+        } else {
+          const imgData = await res.json();
+
+          // Safe check: make sure data.display_url exists
+          if (imgData?.data?.display_url) {
+            foodImage = imgData.data.display_url;
+          } else {
+            console.error("Unexpected ImgBB response:", imgData);
+            Swal.fire(
+              "Warning",
+              "Image uploaded but no URL received. Using placeholder.",
+              "warning"
+            );
+          }
+        }
       }
-    );
-    const imgData = await imgRes.json();
 
-    const mealData = {
-      foodName: data.foodName,
-      chefName: user.displayName,
-      foodImage: imgData.data.display_url,
-      price: parseFloat(data.price),
-      rating: 0,
-      ingredients: data.ingredients.split(",").map((i) => i.trim()),
-      estimatedDeliveryTime: data.estimatedDeliveryTime,
-      chefExperience: data.chefExperience,
-      chefId: userData.chefId,
-      userEmail: user.email,
-    };
+      // Prepare meal data
+      const mealData = {
+        foodName: data.foodName,
+        chefName: user.displayName || "Chef",
+        foodImage,
+        price: parseFloat(data.price),
+        rating: 0,
+        ingredients: data.ingredients.split(",").map((i) => i.trim()),
+        estimatedDeliveryTime: data.estimatedDeliveryTime,
+        chefExperience: data.chefExperience,
+        chefId: userData.chefId,
+        userEmail: user.email,
+      };
 
-    await axiosSecure.post("/meals", mealData);
-    Swal.fire("Success!", "Meal created successfully", "success");
-    reset();
+      // Send to server
+      await axiosSecure.post("/meals", mealData);
+      Swal.fire("Success!", "Meal created successfully!", "success");
+      reset();
+    } catch (error) {
+      console.error("Error creating meal:", error);
+      Swal.fire("Error", "Failed to create meal. Please try again.", "error");
+    }
   };
 
   return (
