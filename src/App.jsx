@@ -1,6 +1,9 @@
+import Navbar from "./components/layout/Navbar";
+
 function App() {
   return (
     <>
+      <Navbar />
       <div className="hero bg-base-200 min-h-screen">
         <div className="hero-content text-center">
           <div className="max-w-md">
