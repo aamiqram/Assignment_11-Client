@@ -5,14 +5,16 @@ import MealCard from "../components/ui/MealCard";
 import { Link } from "react-router-dom";
 
 const Home = () => {
-  // Fetch 6 daily meals
-  const { data: dailyMeals = [], isLoading } = useQuery({
+  // Daily Meals Section
+  const { data = { meals: [] }, isLoading } = useQuery({
     queryKey: ["dailyMeals"],
     queryFn: async () => {
       const res = await axiosSecure.get("/meals?limit=6");
       return res.data;
     },
   });
+
+  const dailyMeals = data.meals || [];
 
   // Mock reviews (replace with real fetch later)
   const reviews = [
