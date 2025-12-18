@@ -11,6 +11,8 @@ import Profile from "../pages/dashboard/Profile";
 import PrivateRoute from "./PrivateRoute";
 import Order from "../pages/Order";
 import MyOrders from "../pages/dashboard/MyOrders";
+import MyReviews from "../pages/dashboard/MyReviews";
+import Favorites from "../pages/dashboard/Favorites";
 
 const router = createBrowserRouter([
   {
@@ -41,6 +43,8 @@ const router = createBrowserRouter([
     children: [
       { path: "profile", element: <Profile /> },
       { path: "my-orders", element: <MyOrders /> },
+      { path: "my-reviews", element: <MyReviews /> },
+      { path: "favorites", element: <Favorites /> },
     ],
   },
   {
