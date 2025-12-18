@@ -36,12 +36,12 @@ const Profile = () => {
       <div className="card bg-base-100 shadow-xl max-w-2xl">
         <div className="card-body items-center text-center">
           <img
-            src={user.photoURL || "https://i.ibb.co.com/avatar.png"}
+            src={user?.photoURL || "https://i.ibb.co.com/avatar.png"}
             alt="Profile"
             className="w-32 h-32 rounded-full mb-6"
           />
-          <h2 className="text-3xl font-bold">{user.displayName || "User"}</h2>
-          <p className="text-xl">{user.email}</p>
+          <h2 className="text-3xl font-bold">{user?.displayName || "User"}</h2>
+          <p className="text-xl">{user?.email}</p>
           <div className="badge badge-primary badge-lg mt-4">
             {role.toUpperCase()}
           </div>
