@@ -9,6 +9,8 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Profile from "../pages/dashboard/Profile";
 
 import PrivateRoute from "./PrivateRoute";
+import Order from "../pages/Order";
+import MyOrders from "../pages/dashboard/MyOrders";
 
 const router = createBrowserRouter([
   {
@@ -36,7 +38,18 @@ const router = createBrowserRouter([
         <DashboardLayout />
       </PrivateRoute>
     ),
-    children: [{ path: "profile", element: <Profile /> }],
+    children: [
+      { path: "profile", element: <Profile /> },
+      { path: "my-orders", element: <MyOrders /> },
+    ],
+  },
+  {
+    path: "/order/:id",
+    element: (
+      <PrivateRoute>
+        <Order />
+      </PrivateRoute>
+    ),
   },
 ]);
 
