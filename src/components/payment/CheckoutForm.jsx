@@ -11,24 +11,26 @@ const CheckoutForm = ({ order, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!stripe || !elements) return;
+    if (!stripe || !elements) {
+      return;
+    }
 
     const cardElement = elements.getElement(CardElement);
 
     setProcessing(true);
 
     try {
-      // 1. Create payment intent on server
+      // Create payment intent on server
       const { data } = await axiosSecure.post("/create-payment-intent", {
-        totalAmount: order.price * order.quantity * 100, // Stripe uses cents
+        totalAmount: order.price * order.quantity * 100, // cents
       });
 
-      // 2. Confirm payment
+      // Confirm payment
       const result = await stripe.confirmCardPayment(data.clientSecret, {
         payment_method: {
           card: cardElement,
           billing_details: {
-            email: order.userEmail,
+            email: order.userEmail || "anonymous@example.com",
           },
         },
       });
@@ -36,22 +38,22 @@ const CheckoutForm = ({ order, onSuccess }) => {
       if (result.error) {
         Swal.fire("Payment Failed", result.error.message, "error");
       } else if (result.paymentIntent.status === "succeeded") {
-        // 3. Update order status on server
+        // Update payment status on server
         await axiosSecure.patch(`/orders/${order._id}/pay`);
-        Swal.fire("Success!", "Payment completed successfully!", "success");
-        onSuccess(); // refresh orders list
+        Swal.fire("Success!", "Payment completed!", "success");
+        onSuccess();
       }
     } catch (err) {
       console.error(err);
       Swal.fire("Error", "Payment failed. Try again.", "error");
+    } finally {
+      setProcessing(false);
     }
-
-    setProcessing(false);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="p-4 border rounded-lg bg-base-100">
+    <form onSubmit={handleSubmit} className="mt-6">
+      <div className="p-4 border rounded-box bg-base-200">
         <CardElement
           options={{
             style: {
@@ -70,18 +72,20 @@ const CheckoutForm = ({ order, onSuccess }) => {
       <button
         type="submit"
         disabled={!stripe || processing}
-        className="btn btn-success btn-lg w-full"
+        className="btn btn-success btn-lg w-full mt-6"
       >
         {processing ? (
-          <span className="loading loading-spinner"></span>
+          <>
+            <span className="loading loading-spinner"></span>
+            Processing...
+          </>
         ) : (
           `Pay ৳${order.price * order.quantity}`
         )}
       </button>
 
-      <p className="text-sm text-center text-gray-500">
-        Use test card: <strong>4242 4242 4242 4242</strong> • Any future date •
-        Any CVC
+      <p className="text-sm text-center mt-4 text-gray-500">
+        Test card: <strong>4242 4242 4242 4242</strong> • Any expiry • Any CVC
       </p>
     </form>
   );

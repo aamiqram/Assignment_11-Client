@@ -1,8 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axiosSecure from "../../../utils/axiosSecure";
-import useAuth from "../../../hooks/useAuth";
-import { Elements } from "@stripe/react-stripe-js";
-import CheckoutForm from "../../../components/payment/CheckoutForm";
+import axiosSecure from "../../utils/axiosSecure";
+import useAuth from "../../hooks/useAuth";
+import CheckoutForm from "../../components/payment/CheckoutForm";
 
 const MyOrders = () => {
   const { user } = useAuth();
@@ -22,7 +21,7 @@ const MyOrders = () => {
 
   if (isLoading)
     return (
-      <div className="flex justify-center mt-20">
+      <div className="flex justify-center items-center min-h-screen">
         <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
@@ -60,17 +59,14 @@ const MyOrders = () => {
                   </span>
                 </p>
 
-                {/* Show Pay button only if accepted and not paid */}
+                {/* Pay button only when accepted and pending */}
                 {order.orderStatus === "accepted" &&
                   order.paymentStatus === "Pending" && (
                     <div className="mt-6">
-                      <h3 className="font-bold mb-4">Complete Payment</h3>
-                      <Elements>
-                        <CheckoutForm
-                          order={order}
-                          onSuccess={handlePaymentSuccess}
-                        />
-                      </Elements>
+                      <CheckoutForm
+                        order={order}
+                        onSuccess={handlePaymentSuccess}
+                      />
                     </div>
                   )}
               </div>
