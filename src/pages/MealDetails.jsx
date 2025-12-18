@@ -42,6 +42,14 @@ const MealDetails = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["reviews", id]);
+      queryClient.invalidateQueries({ queryKey: ["recentReviews"] });
+      queryClient.invalidateQueries({ queryKey: ["myReviews"] });
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          query.queryKey[0] === "reviews" ||
+          query.queryKey[0] === "recentReviews" ||
+          query.queryKey[0] === "myReviews",
+      });
       Swal.fire("Success!", "Review submitted successfully!", "success");
       reset();
     },

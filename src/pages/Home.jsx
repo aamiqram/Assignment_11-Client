@@ -16,27 +16,14 @@ const Home = () => {
 
   const dailyMeals = data.meals || [];
 
-  // Mock reviews (replace with real fetch later)
-  const reviews = [
-    {
-      name: "Sarah Ahmed",
-      rating: 5,
-      comment: "Best homemade biryani ever!",
-      image: "https://i.ibb.co.com/sample1.jpg",
+  // Real reviews for home page
+  const { data: reviews = [], isLoading: reviewsLoading } = useQuery({
+    queryKey: ["recentReviews"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/recent-reviews");
+      return res.data;
     },
-    {
-      name: "Rahim Khan",
-      rating: 4.5,
-      comment: "Fresh and delicious every time.",
-      image: "https://i.ibb.co.com/sample2.jpg",
-    },
-    {
-      name: "Ayesha Siddika",
-      rating: 5,
-      comment: "Highly recommend the grilled chicken!",
-      image: "https://i.ibb.co.com/sample3.jpg",
-    },
-  ];
+  });
 
   return (
     <div>
@@ -70,7 +57,7 @@ const Home = () => {
         </div>
         <div className="absolute inset-0 -z-10">
           <img
-            src="https://i.ibb.co.com/hero-food-bg.jpg"
+            src="https://t3.ftcdn.net/jpg/03/35/51/06/360_F_335510693_HY7mLg3ARdLccKoXk3m66NLDpJRJh51p.jpg"
             alt="Food background"
             className="w-full h-full object-cover opacity-30"
           />
@@ -105,38 +92,56 @@ const Home = () => {
         <h2 className="text-4xl font-bold text-center mb-12">
           What Our Customers Say
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-6">
-          {reviews.map((review, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.2 }}
-              className="card bg-base-100 shadow-xl"
-            >
-              <div className="card-body items-center text-center">
-                <img
-                  src={review.image}
-                  alt={review.name}
-                  className="w-20 h-20 rounded-full mb-4"
-                />
-                <h3 className="font-bold">{review.name}</h3>
-                <div className="rating rating-md">
-                  {[...Array(5)].map((_, idx) => (
-                    <input
-                      key={idx}
-                      type="radio"
-                      className="mask mask-star-2 bg-orange-400"
-                      disabled
-                      checked={idx < Math.floor(review.rating)}
-                    />
-                  ))}
+        {reviewsLoading ? (
+          <div className="flex justify-center">
+            <span className="loading loading-spinner loading-lg"></span>
+          </div>
+        ) : reviews.length === 0 ? (
+          <p className="text-center text-gray-500">
+            No reviews yet. Be the first!
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-6">
+            {reviews.map((review, i) => (
+              <motion.div
+                key={review._id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.2 }}
+                className="card bg-base-100 shadow-xl"
+              >
+                <div className="card-body items-center text-center">
+                  <img
+                    src={
+                      review.reviewerImage ||
+                      "https://i.ibb.co.com/0s3pdnc/avatar.png"
+                    }
+                    alt={review.reviewerName}
+                    className="w-20 h-20 rounded-full mb-4"
+                  />
+                  <h3 className="font-bold">{review.reviewerName}</h3>
+                  <div className="rating rating-md">
+                    {[...Array(5)].map((_, idx) => (
+                      <input
+                        key={idx}
+                        type="radio"
+                        className="mask mask-star-2 bg-orange-400"
+                        disabled
+                        checked={idx < review.rating}
+                      />
+                    ))}
+                  </div>
+                  <p className="italic mt-4">&quot;{review.comment}&quot;</p>
+                  {review.meal && (
+                    <p className="text-sm text-gray-500 mt-2">
+                      For: {review.meal.foodName}
+                    </p>
+                  )}
                 </div>
-                <p className="italic">&quot;{review.comment}&quot;</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Extra Section: Why Choose Us */}

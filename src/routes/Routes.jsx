@@ -28,6 +28,7 @@ import PlatformStatistics from "../pages/dashboard/admin/PlatformStatistics";
 
 // Private Pages
 import Order from "../pages/Order";
+import NotFound from "../pages/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <Home /> },
       { path: "/meals", element: <Meals /> },
+      { path: "*", element: <NotFound /> },
       {
         path: "/meal/:id",
         element: (
