@@ -1,18 +1,18 @@
 import axios from "axios";
+import { getAuth } from "firebase/auth";
 
 const axiosSecure = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL,
-  withCredentials: true,
 });
 
-axiosSecure.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
-      // handle token refresh or logout
-    }
-    return Promise.reject(error);
+// Attach Firebase ID token to every request
+axiosSecure.interceptors.request.use(async (config) => {
+  const auth = getAuth();
+  if (auth.currentUser) {
+    const token = await auth.currentUser.getIdToken();
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
+  return config;
+});
 
 export default axiosSecure;

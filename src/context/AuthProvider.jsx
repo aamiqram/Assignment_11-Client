@@ -7,9 +7,10 @@ import {
   signOut,
 } from "firebase/auth";
 import app from "../firebase/firebase.config";
-import axios from "axios";
+import axiosSecure from "../utils/axiosSecure";
 
 export const AuthContext = createContext(null);
+
 const auth = getAuth(app);
 
 const AuthProvider = ({ children }) => {
@@ -33,23 +34,24 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-
       if (currentUser) {
-        const idToken = await currentUser.getIdToken();
-        await axios.post(
-          `${import.meta.env.VITE_SERVER_URL}/jwt`,
-          { idToken },
-          { withCredentials: true }
-        );
+        setUser(currentUser);
+        setLoading(false);
+
+        try {
+          await axiosSecure.put("/users", {
+            name: currentUser.displayName || "User",
+            email: currentUser.email,
+            image:
+              currentUser.photoURL || "https://i.ibb.co.com/0s3pdnc/avatar.png",
+          });
+        } catch (err) {
+          console.error("User sync failed:", err);
+        }
       } else {
-        await axios.post(
-          `${import.meta.env.VITE_SERVER_URL}/logout`,
-          {},
-          { withCredentials: true }
-        );
+        setUser(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => unsubscribe();

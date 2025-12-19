@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosSecure from "../../../utils/axiosSecure";
 import useAuth from "../../../hooks/useAuth";
 import Swal from "sweetalert2";
+import LoadingSpinner from "../../../components/layout/LoadingSpinner";
 
 const MyMeals = () => {
   const { user } = useAuth();

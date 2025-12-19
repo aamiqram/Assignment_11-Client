@@ -34,28 +34,37 @@ const MyReviews = () => {
 
   if (isLoading)
     return (
-      <div className="flex justify-center mt-20">
-        <span className="loading loading-spinner loading-lg"></span>
+      <div className="flex justify-center items-center min-h-screen">
+        <span className="spinner"></span>
       </div>
     );
 
   return (
-    <div className="min-h-screen p-10">
-      <h1 className="text-4xl font-bold mb-10">My Reviews</h1>
+    <div className="min-h-screen pt-20 p-6">
+      <h1 className="text-4xl font-bold text-center mb-10 text-orange-600">
+        My Reviews
+      </h1>
 
       {reviews.length === 0 ? (
-        <p className="text-center text-gray-500">
-          You haven't written any reviews yet.
-        </p>
+        <div className="text-center py-20">
+          <p className="text-2xl text-gray-500">
+            You haven't written any reviews yet.
+          </p>
+          <p className="text-gray-600 mt-4">
+            Start ordering meals and share your experience!
+          </p>
+        </div>
       ) : (
-        <div className="grid gap-6">
+        <div className="grid gap-8 max-w-5xl mx-auto">
           {reviews.map((review) => (
-            <div key={review._id} className="card bg-base-100 shadow-xl">
+            <div key={review._id} className="card-custom hover-card">
               <div className="card-body">
                 <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="card-title">{review.mealName || "Meal"}</h3>
-                    <div className="rating rating-md my-2">
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold text-gray-800">
+                      {review.mealName || "Meal"}
+                    </h3>
+                    <div className="rating rating-lg my-4">
                       {[...Array(5)].map((_, i) => (
                         <input
                           key={i}
@@ -66,59 +75,79 @@ const MyReviews = () => {
                         />
                       ))}
                     </div>
-                    <p>{review.comment}</p>
-                    <p className="text-sm text-gray-500 mt-2">
-                      {new Date(review.date).toLocaleDateString()}
+                    <p className="text-lg text-gray-700">{review.comment}</p>
+                    <p className="text-sm text-gray-500 mt-4">
+                      {new Date(review.date).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
                     </p>
                   </div>
-                  <div className="flex gap-2">
+
+                  <div className="flex flex-col gap-3">
                     <button
                       onClick={() => {
                         Swal.fire({
                           title: "Update Review",
                           html: `
-                            <select id="rating" className="select select-bordered w-full">
-                              ${[1, 2, 3, 4, 5]
-                                .map(
-                                  (n) =>
-                                    `<option value="${n}" ${
-                                      n === review.rating ? "selected" : ""
-                                    }>${n} Star${n > 1 ? "s" : ""}</option>`
-                                )
-                                .join("")}
-                            </select>
-                            <textarea id="comment" className="textarea textarea-bordered w-full mt-4">${
-                              review.comment
-                            }</textarea>
+                            <div class="space-y-4">
+                              <select id="swal-rating" class="select select-bordered w-full">
+                                ${[1, 2, 3, 4, 5]
+                                  .map(
+                                    (n) =>
+                                      `<option value="${n}" ${
+                                        n === review.rating ? "selected" : ""
+                                      }>
+                                        ${n} Star${n > 1 ? "s" : ""}
+                                      </option>`
+                                  )
+                                  .join("")}
+                              </select>
+                              <textarea id="swal-comment" class="textarea textarea-bordered w-full h-32">${
+                                review.comment
+                              }</textarea>
+                            </div>
                           `,
                           showCancelButton: true,
+                          confirmButtonText: "Update",
                           preConfirm: () => {
-                            const rating =
-                              document.getElementById("rating").value;
+                            const rating = parseInt(
+                              document.getElementById("swal-rating").value
+                            );
                             const comment =
-                              document.getElementById("comment").value;
+                              document.getElementById("swal-comment").value;
+                            if (!comment.trim()) {
+                              Swal.showValidationMessage("Comment is required");
+                            }
+                            return { rating, comment };
+                          },
+                        }).then((result) => {
+                          if (result.isConfirmed) {
                             updateMutation.mutate({
                               id: review._id,
                               updatedReview: {
-                                rating: parseInt(rating),
-                                comment,
+                                rating: result.value.rating,
+                                comment: result.value.comment,
                               },
                             });
-                          },
+                          }
                         });
                       }}
-                      className="btn btn-warning btn-sm"
+                      className="btn-secondary btn-sm"
                     >
                       Update
                     </button>
+
                     <button
                       onClick={() => {
                         Swal.fire({
                           title: "Delete Review?",
-                          text: "This cannot be undone",
+                          text: "This action cannot be undone",
                           icon: "warning",
                           showCancelButton: true,
-                          confirmButtonText: "Yes, delete",
+                          confirmButtonText: "Yes, delete it",
+                          confirmButtonColor: "#ef4444",
                         }).then((result) => {
                           if (result.isConfirmed) {
                             deleteMutation.mutate(review._id);
