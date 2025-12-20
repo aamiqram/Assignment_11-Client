@@ -72,7 +72,7 @@ const MyMeals = () => {
                 alt={meal.foodName}
                 className="w-32 h-32 rounded object-cover"
               />
-              <div className="flex-grow">
+              <div className="grow">
                 <h2 className="card-title">{meal.foodName}</h2>
                 <p>৳{meal.price}</p>
                 <p className="text-sm text-gray-600">
