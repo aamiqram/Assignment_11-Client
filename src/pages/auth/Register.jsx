@@ -83,164 +83,180 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="card-custom w-full max-w-lg p-10">
-        <h2 className="text-center text-4xl font-bold text-orange-600 mb-8">
-          Create Your Account
-        </h2>
+    <div className="min-h-screen flex items-center justify-center bg-base-200 px-4 py-8">
+      <div className="card bg-base-100 w-full max-w-lg shadow-xl p-8 md:p-10">
+        <div className="card-body p-0">
+          <h2 className="text-center text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-4">
+            Create Your Account
+          </h2>
+          <p className="text-center text-neutral-500 dark:text-neutral-400 mb-8">
+            Join LocalChefBazaar today
+          </p>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Name */}
-          <div>
-            <label className="label">
-              <span className="label-text font-medium">Name</span>
-            </label>
-            <input
-              {...register("name", { required: "Name is required" })}
-              placeholder="Your full name"
-              className="input input-bordered w-full"
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Name */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-semibold">Full Name</span>
+              </label>
+              <input
+                {...register("name", { required: "Name is required" })}
+                placeholder="Your full name"
+                className="input input-bordered w-full focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                disabled={loading}
+              />
+              {errors.name && (
+                <p className="text-error text-sm mt-1">{errors.name.message}</p>
+              )}
+            </div>
+
+            {/* Email */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-semibold">Email Address</span>
+              </label>
+              <input
+                type="email"
+                {...register("email", { required: "Email is required" })}
+                placeholder="your@email.com"
+                className="input input-bordered w-full focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                disabled={loading}
+              />
+              {errors.email && (
+                <p className="text-error text-sm mt-1">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+
+            {/* Profile Image */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-semibold">Profile Image</span>
+                <span className="label-text-alt text-neutral-500">
+                  Optional
+                </span>
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                {...register("profileImage")}
+                onChange={(e) => {
+                  if (e.target.files[0]) {
+                    setImagePreview(URL.createObjectURL(e.target.files[0]));
+                  }
+                }}
+                className="file-input file-input-bordered w-full"
+                disabled={loading}
+              />
+              {imagePreview && (
+                <div className="mt-4">
+                  <div className="avatar">
+                    <div className="w-32 h-32 rounded-lg mx-auto">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="rounded-lg object-cover"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Address */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-semibold">Address</span>
+              </label>
+              <input
+                {...register("address", { required: "Address is required" })}
+                placeholder="Your delivery address"
+                className="input input-bordered w-full focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                disabled={loading}
+              />
+              {errors.address && (
+                <p className="text-error text-sm mt-1">
+                  {errors.address.message}
+                </p>
+              )}
+            </div>
+
+            {/* Password */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-semibold">Password</span>
+              </label>
+              <input
+                type="password"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: { value: 6, message: "Minimum 6 characters" },
+                })}
+                placeholder="••••••••"
+                className="input input-bordered w-full focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                disabled={loading}
+              />
+              {errors.password && (
+                <p className="text-error text-sm mt-1">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            {/* Confirm Password */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-semibold">
+                  Confirm Password
+                </span>
+              </label>
+              <input
+                type="password"
+                {...register("confirmPassword", {
+                  validate: (value) =>
+                    value === password || "Passwords do not match",
+                })}
+                placeholder="••••••••"
+                className="input input-bordered w-full focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                disabled={loading}
+              />
+              {errors.confirmPassword && (
+                <p className="text-error text-sm mt-1">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
               disabled={loading}
-            />
-            {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-            )}
-          </div>
+              className="btn bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-300 transform hover:-translate-y-1 w-full py-3 text-lg font-semibold mt-6"
+            >
+              {loading ? (
+                <>
+                  <span className="loading loading-spinner loading-sm"></span>
+                  Creating Account...
+                </>
+              ) : (
+                "Register"
+              )}
+            </button>
+          </form>
 
-          {/* Email */}
-          <div>
-            <label className="label">
-              <span className="label-text font-medium">Email</span>
-            </label>
-            <input
-              type="email"
-              {...register("email", { required: "Email is required" })}
-              placeholder="your@email.com"
-              className="input input-bordered w-full"
-              disabled={loading}
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
+          <div className="divider my-8">OR</div>
 
-          {/* Profile Image */}
-          <div>
-            <label className="label">
-              <span className="label-text font-medium">Profile Image</span>
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              {...register("profileImage")}
-              onChange={(e) => {
-                if (e.target.files[0]) {
-                  setImagePreview(URL.createObjectURL(e.target.files[0]));
-                }
-              }}
-              className="file-input file-input-bordered w-full"
-              disabled={loading}
-            />
-            {imagePreview && (
-              <div className="mt-4">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="w-full h-64 object-cover rounded-xl shadow-md"
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Address */}
-          <div>
-            <label className="label">
-              <span className="label-text font-medium">Address</span>
-            </label>
-            <input
-              {...register("address", { required: "Address is required" })}
-              placeholder="Your delivery address"
-              className="input input-bordered w-full"
-              disabled={loading}
-            />
-            {errors.address && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.address.message}
-              </p>
-            )}
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="label">
-              <span className="label-text font-medium">Password</span>
-            </label>
-            <input
-              type="password"
-              {...register("password", {
-                required: "Password is required",
-                minLength: { value: 6, message: "Minimum 6 characters" },
-              })}
-              placeholder="••••••••"
-              className="input input-bordered w-full"
-              disabled={loading}
-            />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-
-          {/* Confirm Password */}
-          <div>
-            <label className="label">
-              <span className="label-text font-medium">Confirm Password</span>
-            </label>
-            <input
-              type="password"
-              {...register("confirmPassword", {
-                validate: (value) =>
-                  value === password || "Passwords do not match",
-              })}
-              placeholder="••••••••"
-              className="input input-bordered w-full"
-              disabled={loading}
-            />
-            {errors.confirmPassword && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary w-full py-4 text-lg font-semibold flex items-center justify-center"
-          >
-            {loading ? (
-              <>
-                <span className="spinner"></span>
-                Creating Account...
-              </>
-            ) : (
-              "Register"
-            )}
-          </button>
-        </form>
-
-        <p className="text-center mt-8 text-gray-600">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-orange-600 font-semibold hover:underline"
-          >
-            Login here
-          </Link>
-        </p>
+          <p className="text-center text-neutral-600 dark:text-neutral-400">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent font-semibold hover:text-primary/80 transition-colors"
+            >
+              Login here
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

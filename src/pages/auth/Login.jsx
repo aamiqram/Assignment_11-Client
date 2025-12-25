@@ -34,74 +34,81 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="card-custom w-full max-w-md p-10">
-        <h2 className="text-center text-4xl font-bold text-orange-600 mb-8">
-          Login to LocalChefBazaar
-        </h2>
+    <div className="min-h-screen flex items-center justify-center bg-base-200 px-4 py-8">
+      <div className="card bg-base-100 w-full max-w-md shadow-xl p-8 md:p-10">
+        <div className="card-body p-0">
+          <h2 className="text-center text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-4">
+            Welcome Back
+          </h2>
+          <p className="text-center text-neutral-500 dark:text-neutral-400 mb-8">
+            Login to your LocalChefBazaar account
+          </p>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div>
-            <label className="label">
-              <span className="label-text font-medium">Email</span>
-            </label>
-            <input
-              type="email"
-              {...register("email", { required: "Email is required" })}
-              placeholder="Enter your email"
-              className="input input-bordered w-full"
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-semibold">Email Address</span>
+              </label>
+              <input
+                type="email"
+                {...register("email", { required: "Email is required" })}
+                placeholder="Enter your email"
+                className="input input-bordered w-full focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                disabled={loading}
+              />
+              {errors.email && (
+                <p className="text-error text-sm mt-1">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-semibold">Password</span>
+              </label>
+              <input
+                type="password"
+                {...register("password", { required: "Password is required" })}
+                placeholder="Enter your password"
+                className="input input-bordered w-full focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                disabled={loading}
+              />
+              {errors.password && (
+                <p className="text-error text-sm mt-1">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
               disabled={loading}
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
+              className="btn  bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-300 transform hover:-translate-y-1 w-full py-3 text-lg font-semibold mt-6"
+            >
+              {loading ? (
+                <>
+                  <span className="loading loading-spinner loading-sm"></span>
+                  Logging in...
+                </>
+              ) : (
+                "Login"
+              )}
+            </button>
+          </form>
 
-          <div>
-            <label className="label">
-              <span className="label-text font-medium">Password</span>
-            </label>
-            <input
-              type="password"
-              {...register("password", { required: "Password is required" })}
-              placeholder="Enter your password"
-              className="input input-bordered w-full"
-              disabled={loading}
-            />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
+          <div className="divider my-8">OR</div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary w-full py-4 text-lg font-semibold flex items-center justify-center"
-          >
-            {loading ? (
-              <>
-                <span className="spinner"></span>
-                Logging in...
-              </>
-            ) : (
-              "Login"
-            )}
-          </button>
-        </form>
-
-        <p className="text-center mt-8 text-gray-600">
-          New to LocalChefBazaar?{" "}
-          <Link
-            to="/register"
-            className="text-orange-600 font-semibold hover:underline"
-          >
-            Create an account
-          </Link>
-        </p>
+          <p className="text-center text-neutral-600 dark:text-neutral-400">
+            Don't have an account?{" "}
+            <Link
+              to="/register"
+              className="bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent font-semibold hover:text-primary/80 transition-colors"
+            >
+              Create an account
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
