@@ -148,7 +148,8 @@ const Login = () => {
   const fillDemoCredentials = () => {
     const demoEmail =
       import.meta.env.VITE_DEMO_EMAIL || "demo@localchefbazaar.com";
-    const demoPassword = import.meta.env.VITE_DEMO_PASSWORD || "demo123456";
+    const demoPassword =
+      import.meta.env.VITE_DEMO_PASSWORD || "demopassword123";
 
     setValue("email", demoEmail);
     setValue("password", demoPassword);
