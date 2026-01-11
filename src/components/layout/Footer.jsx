@@ -48,9 +48,8 @@ const Footer = () => {
               {[
                 { label: "Home", path: "/" },
                 { label: "Browse Meals", path: "/meals" },
+                { label: "Help & Support", path: "/help" },
                 { label: "Become a Chef", path: "/dashboard/createmeal" },
-                { label: "How It Works", path: "/#how-it-works" },
-                { label: "About Us", path: "/#about" },
               ].map((item, idx) => (
                 <li key={idx}>
                   <Link
@@ -230,8 +229,10 @@ const Footer = () => {
             {[
               { label: "Privacy Policy", path: "/privacy" },
               { label: "Terms of Service", path: "/terms" },
-              { label: "Cookie Policy", path: "/cookies" },
+              { label: "Cookie Policy", path: "/help#cookies" },
               { label: "Contact", path: "/contact" },
+              { label: "About", path: "/about" },
+              { label: "Blog", path: "/blog" },
             ].map((link, idx) => (
               <Link
                 key={idx}

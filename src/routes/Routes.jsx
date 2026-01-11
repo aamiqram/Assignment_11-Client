@@ -7,8 +7,15 @@ import PrivateRoute from "./PrivateRoute";
 import Home from "../pages/Home";
 import Meals from "../pages/Meals";
 import MealDetails from "../pages/MealDetails";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
+import Blog from "../pages/Blog";
+import Privacy from "../pages/Privacy";
+import TermsPage from "../pages/TermsPage";
+import HelpSupport from "../pages/HelpSupport";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
+import ForgotPassword from "../pages/auth/ForgotPassword";
 
 // User Dashboard
 import Profile from "../pages/dashboard/Profile";
@@ -37,15 +44,16 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <Home /> },
       { path: "/meals", element: <Meals /> },
-      { path: "*", element: <NotFound /> },
-      {
-        path: "/meal/:id",
-        element: (
-          <PrivateRoute>
-            <MealDetails />
-          </PrivateRoute>
-        ),
-      },
+      { path: "/meal/:id", element: <MealDetails /> }, // NOW PUBLIC
+      { path: "/about", element: <About /> },
+      { path: "/contact", element: <Contact /> },
+      { path: "/blog", element: <Blog /> },
+      { path: "/privacy", element: <Privacy /> },
+      { path: "/terms", element: <TermsPage /> },
+      { path: "/help", element: <HelpSupport /> },
+      { path: "/login", element: <Login /> },
+      { path: "/register", element: <Register /> },
+      { path: "/forgot-password", element: <ForgotPassword /> },
       {
         path: "/order/:id",
         element: (
@@ -54,8 +62,7 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
-      { path: "/login", element: <Login /> },
-      { path: "/register", element: <Register /> },
+      { path: "*", element: <NotFound /> },
     ],
   },
   {

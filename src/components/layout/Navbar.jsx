@@ -85,6 +85,31 @@ const Navbar = () => {
               Discover Meals
             </Link>
 
+            <Link
+              to="/about"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-300 font-medium"
+            >
+              About
+            </Link>
+            <Link
+              to="/blog"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-300 font-medium"
+            >
+              Blog
+            </Link>
+            <Link
+              to="/contact"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-300 font-medium"
+            >
+              Contact
+            </Link>
+            <Link
+              to="/help"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-300 font-medium"
+            >
+              Help
+            </Link>
+
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
